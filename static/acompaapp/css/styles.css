@@ -1,0 +1,184 @@
+* {
+    box-sizing: border-box;
+    font-family: 'Segoe UI', Tahoma, sans-serif;
+}
+
+body {
+    margin: 0;
+    background: #f4f7fb;
+    color: #1f2937;
+}
+
+/* Header */
+.app-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 14px 18px;
+    background: #ffffff;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.05);
+}
+
+.logo {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-weight: 600;
+    color: #2563eb;
+}
+
+.menu-icon {
+    font-size: 20px;
+    color: #374151;
+}
+
+/* Main */
+.container {
+    padding: 20px;
+    max-width: 800px;
+    margin: auto;
+}
+
+h1 {
+    font-size: 22px;
+    margin-bottom: 6px;
+}
+
+.subtitle {
+    color: #6b7280;
+    margin-bottom: 16px;
+}
+
+/* Search */
+.search-box {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 24px;
+}
+
+.input-wrapper {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    background: #ffffff;
+    border-radius: 8px;
+    padding: 10px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+}
+
+.input-wrapper i {
+    color: #9ca3af;
+    margin-right: 8px;
+}
+
+.input-wrapper input {
+    border: none;
+    outline: none;
+    width: 100%;
+}
+
+.search-box button {
+    background: #16a34a;
+    border: none;
+    color: white;
+    padding: 0 18px;
+    border-radius: 8px;
+    cursor: pointer;
+}
+
+/* Results */
+.results h2 {
+    margin-bottom: 10px;
+}
+
+.user-title {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    color: #065f46;
+    margin-bottom: 16px;
+}
+
+/* Cards */
+.card {
+    display: flex;
+    align-items: center;
+    background: #ffffff;
+    border-radius: 10px;
+    padding: 14px;
+    margin-bottom: 14px;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.05);
+    position: relative;
+}
+
+.card-icon {
+    font-size: 26px;
+    margin-right: 14px;
+}
+
+.card-content p {
+    margin: 4px 0;
+    font-size: 14px;
+}
+
+/* Accent colors */
+.card.blue {
+    border-left: 6px solid #3b82f6;
+}
+
+.card.green {
+    border-left: 6px solid #22c55e;
+}
+
+.card.orange {
+    border-left: 6px solid #f59e0b;
+}
+
+.location {
+    margin-left: auto;
+    color: #16a34a;
+    font-size: 18px;
+}
+
+.tabs {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 18px;
+}
+
+.tab-button {
+    border: 1px solid #d1d5db;
+    background: #ffffff;
+    color: #111827;
+    padding: 10px 16px;
+    border-radius: 10px;
+    cursor: pointer;
+    transition: all 0.15s ease-in-out;
+    font-weight: 600;
+    letter-spacing: 0.02em;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 140px;
+}
+
+.tab-button.active {
+    background: #2563eb;
+    color: #ffffff;
+    border-color: #2563eb;
+}
+
+.tab-button:hover {
+    background: #eff6ff;
+}
+
+.tabs {
+    flex-wrap: wrap;
+    background: #f8fafc;
+    padding: 10px;
+    border-radius: 14px;
+}
+
+.tab-panel.hidden {
+    display: none !important;
+}

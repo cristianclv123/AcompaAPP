@@ -1,0 +1,137 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>AcompañApp Escolar</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <link rel="stylesheet" href="{% static 'acompaapp/css/styles.css' %}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+</head>
+<body>
+
+<header class="app-header">
+    <div class="logo">
+        <i class="fa-solid fa-house"></i>
+        <span>AcompañApp Escolar Montessori school</span>
+    </div>
+    <i class="fa-solid fa-bars menu-icon"></i>
+</header>
+
+<main class="container">
+
+    <h1>Consulta tus acompañamientos</h1>
+    <p class="subtitle">Ingresa tu nombre:</p>
+
+    <form class="search-box" method="get">
+        <div class="input-wrapper">
+            <i class="fa-solid fa-magnifying-glass"></i>
+            <input type="text" name="q" placeholder="Ej: Angélica" value="{{ request.GET.q }}">
+        </div>
+        <button type="submit">Buscar</button>
+    </form>
+
+    {% if request.GET.q %}
+    <section class="results">
+        <h2>Tus Acompañamientos</h2>
+
+        <div class="user-title">
+            <i class="fa-solid fa-circle-check"></i>
+            <strong>{{ request.GET.q|title }}:</strong> Tus turnos asignados:
+        </div>
+
+        {% if turnos_zonas or turnos_afl %}
+        <div class="tabs">
+            <button type="button" class="tab-button {% if not turnos_afl %}active{% endif %}" data-tab="zonas" onclick="showTab('zonas')">Zonas / Cancha</button>
+            <button type="button" class="tab-button {% if turnos_afl %}active{% endif %}" data-tab="afl" onclick="showTab('afl')">AFL</button>
+        </div>
+
+        <div id="tab-zonas" class="tab-panel {% if turnos_afl %}hidden{% endif %}">
+            {% if turnos_zonas %}
+                {% for turno in turnos_zonas %}
+                <div class="card {{ turno.color_tarjeta }}">
+                    <div class="card-icon">
+                        <i class="fa-solid {{ turno.icono }}"></i>
+                    </div>
+                    <div class="card-content">
+                        <p><strong>Zona:</strong> {{ turno.zona }}</p>
+                        <p><strong>Día:</strong> {{ turno.dia }}</p>
+                        <p><strong>Bloque:</strong> {{ turno.bloque }}</p>
+                    </div>
+                    <i class="fa-solid fa-location-dot location"></i>
+                </div>
+                {% endfor %}
+            {% else %}
+                <div class="card">
+                    <div class="card-content" style="text-align: center; width: 100%;">
+                        <p>No se encontraron acompañamientos de zonas / cancha.</p>
+                    </div>
+                </div>
+            {% endif %}
+        </div>
+
+        <div id="tab-afl" class="tab-panel {% if not turnos_afl %}hidden{% endif %}">
+            {% if turnos_afl %}
+                {% for turno in turnos_afl %}
+                <div class="card {{ turno.color_tarjeta }}">
+                    <div class="card-icon">
+                        <i class="fa-solid {{ turno.icono }}"></i>
+                    </div>
+                    <div class="card-content">
+                        <p><strong>Zona:</strong> {{ turno.zona }}</p>
+                        <p><strong>Día:</strong> {{ turno.dia }}</p>
+                        <p><strong>Bloque:</strong> {{ turno.bloque }}</p>
+                    </div>
+                    <i class="fa-solid fa-location-dot location"></i>
+                </div>
+                {% endfor %}
+            {% else %}
+                <div class="card">
+                    <div class="card-content" style="text-align: center; width: 100%;">
+                        <p>No se encontraron acompañamientos AFL.</p>
+                    </div>
+                </div>
+            {% endif %}
+        </div>
+        {% else %}
+            <div class="card">
+                <div class="card-content" style="text-align: center; width: 100%;">
+                    <p>No se encontraron acompañamientos para "<strong>{{ request.GET.q }}</strong>".</p>
+                    <p style="font-size: 0.9em; color: #666;">Verifica que el nombre esté escrito como aparece en el archivo.</p>
+                </div>
+            </div>
+        {% endif %}
+
+    </section>
+    {% endif %}
+</main>
+
+<script>
+    function showTab(tabName) {
+        const buttons = document.querySelectorAll('.tab-button');
+        const panels = document.querySelectorAll('.tab-panel');
+
+        buttons.forEach(btn => btn.classList.remove('active'));
+        panels.forEach(panel => panel.classList.add('hidden'));
+
+        const activeButton = document.querySelector(`.tab-button[data-tab="${tabName}"]`);
+        if (activeButton) {
+            activeButton.classList.add('active');
+        }
+
+        const target = document.getElementById('tab-' + tabName);
+        if (target) {
+            target.classList.remove('hidden');
+        }
+    }
+
+    document.addEventListener('DOMContentLoaded', function() {
+        const activeButton = document.querySelector('.tab-button.active');
+        if (activeButton) {
+            showTab(activeButton.dataset.tab);
+        }
+    });
+</script>
+</body>
+</html>
