@@ -300,4 +300,37 @@ h1 {
     .card-content p {
         font-size: 13px;
     }
+
+
+    
+}
+
+/* ==========================================
+   PRÓXIMO AFL
+========================================== */
+
+.next-afl {
+    position: relative;
+    border: 2px solid #2563eb !important;
+    background: linear-gradient(
+        135deg,
+        #ffffff,
+        #eff6ff
+    );
+    box-shadow:
+        0 0 15px rgba(37,99,235,.25),
+        0 0 30px rgba(37,99,235,.15);
+}
+
+.badge-proximo {
+    position: absolute;
+    top: -12px;
+    right: 16px;
+    background: #2563eb;
+    color: white;
+    font-size: 12px;
+    font-weight: 700;
+    padding: 6px 12px;
+    border-radius: 20px;
+    box-shadow: 0 4px 10px rgba(0,0,0,.15);
 }
