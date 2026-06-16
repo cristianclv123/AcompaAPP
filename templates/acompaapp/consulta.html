@@ -28,111 +28,160 @@
     <form class="search-box" method="get">
         <div class="input-wrapper">
             <i class="fa-solid fa-magnifying-glass"></i>
-            <input type="text" name="q" placeholder="Ej: Angélica" value="{{ request.GET.q }}">
+            <input type="text"
+                   name="q"
+                   placeholder="Ej: Angélica"
+                   value="{{ request.GET.q }}">
         </div>
         <button type="submit">Buscar</button>
     </form>
 
     {% if request.GET.q %}
     <section class="results">
+
         <h2>Tus Acompañamientos</h2>
 
         <div class="user-title">
             <i class="fa-solid fa-circle-check"></i>
-            <strong>{{ request.GET.q|title }}:</strong> Tus turnos asignados:
+            <strong>{{ request.GET.q|title }}:</strong>
+            Tus turnos asignados:
         </div>
 
         {% if turnos_zonas or turnos_afl %}
+
+        <!-- PESTAÑAS -->
         <div class="tabs">
-            <button type="button" class="tab-button {% if not turnos_afl %}active{% endif %}" data-tab="zonas" onclick="showTab('zonas')">Zonas / Cancha</button>
-            <button type="button" class="tab-button {% if turnos_afl %}active{% endif %}" data-tab="afl" onclick="showTab('afl')">AFL</button>
+            <button type="button"
+                    class="tab-button active"
+                    data-tab="zonas"
+                    onclick="showTab('zonas')">
+                Zonas / Cancha
+            </button>
+
+            <button type="button"
+                    class="tab-button"
+                    data-tab="afl"
+                    onclick="showTab('afl')">
+                AFL
+            </button>
         </div>
 
-        <div id="tab-zonas" class="tab-panel {% if turnos_afl %}hidden{% endif %}">
+        <!-- ZONAS / CANCHA (VISIBLE POR DEFECTO) -->
+        <div id="tab-zonas" class="tab-panel">
+
             {% if turnos_zonas %}
+
                 {% for turno in turnos_zonas %}
                 <div class="card {{ turno.color_tarjeta }}">
                     <div class="card-icon">
                         <i class="fa-solid {{ turno.icono }}"></i>
                     </div>
+
                     <div class="card-content">
                         <p><strong>Zona:</strong> {{ turno.zona }}</p>
                         <p><strong>Día:</strong> {{ turno.dia }}</p>
                         <p><strong>Bloque:</strong> {{ turno.bloque }}</p>
                     </div>
+
                     <i class="fa-solid fa-location-dot location"></i>
                 </div>
                 {% endfor %}
+
             {% else %}
+
                 <div class="card">
-                    <div class="card-content" style="text-align: center; width: 100%;">
+                    <div class="card-content" style="text-align:center; width:100%;">
                         <p>No se encontraron acompañamientos de zonas / cancha.</p>
                     </div>
                 </div>
+
             {% endif %}
+
         </div>
 
-        <div id="tab-afl" class="tab-panel {% if not turnos_afl %}hidden{% endif %}">
+        <!-- AFL (OCULTO POR DEFECTO) -->
+        <div id="tab-afl" class="tab-panel hidden">
+
             {% if turnos_afl %}
+
                 {% for turno in turnos_afl %}
                 <div class="card {{ turno.color_tarjeta }}">
                     <div class="card-icon">
                         <i class="fa-solid {{ turno.icono }}"></i>
                     </div>
+
                     <div class="card-content">
                         <p><strong>Zona:</strong> {{ turno.zona }}</p>
                         <p><strong>Día:</strong> {{ turno.dia }}</p>
                         <p><strong>Bloque:</strong> {{ turno.bloque }}</p>
                     </div>
+
                     <i class="fa-solid fa-location-dot location"></i>
                 </div>
                 {% endfor %}
+
             {% else %}
+
                 <div class="card">
-                    <div class="card-content" style="text-align: center; width: 100%;">
+                    <div class="card-content" style="text-align:center; width:100%;">
                         <p>No se encontraron acompañamientos AFL.</p>
                     </div>
                 </div>
+
             {% endif %}
+
         </div>
+
         {% else %}
-            <div class="card">
-                <div class="card-content" style="text-align: center; width: 100%;">
-                    <p>No se encontraron acompañamientos para "<strong>{{ request.GET.q }}</strong>".</p>
-                    <p style="font-size: 0.9em; color: #666;">Verifica que el nombre esté escrito como aparece en el archivo.</p>
-                </div>
+
+        <div class="card">
+            <div class="card-content" style="text-align:center; width:100%;">
+                <p>
+                    No se encontraron acompañamientos para
+                    "<strong>{{ request.GET.q }}</strong>".
+                </p>
+
+                <p style="font-size:0.9em; color:#666;">
+                    Verifica que el nombre esté escrito como aparece en el archivo.
+                </p>
             </div>
+        </div>
+
         {% endif %}
 
     </section>
     {% endif %}
+
 </main>
 
 <script>
-    function showTab(tabName) {
-        const buttons = document.querySelectorAll('.tab-button');
-        const panels = document.querySelectorAll('.tab-panel');
+function showTab(tabName) {
 
-        buttons.forEach(btn => btn.classList.remove('active'));
-        panels.forEach(panel => panel.classList.add('hidden'));
+    const buttons = document.querySelectorAll('.tab-button');
+    const panels = document.querySelectorAll('.tab-panel');
 
-        const activeButton = document.querySelector(`.tab-button[data-tab="${tabName}"]`);
-        if (activeButton) {
-            activeButton.classList.add('active');
-        }
+    buttons.forEach(btn => btn.classList.remove('active'));
+    panels.forEach(panel => panel.classList.add('hidden'));
 
-        const target = document.getElementById('tab-' + tabName);
-        if (target) {
-            target.classList.remove('hidden');
-        }
+    const activeButton = document.querySelector(
+        `.tab-button[data-tab="${tabName}"]`
+    );
+
+    if (activeButton) {
+        activeButton.classList.add('active');
     }
 
-    document.addEventListener('DOMContentLoaded', function() {
-        const activeButton = document.querySelector('.tab-button.active');
-        if (activeButton) {
-            showTab(activeButton.dataset.tab);
-        }
-    });
+    const target = document.getElementById('tab-' + tabName);
+
+    if (target) {
+        target.classList.remove('hidden');
+    }
+}
+
+document.addEventListener('DOMContentLoaded', function () {
+    showTab('zonas');
+});
 </script>
+
 </body>
 </html>
