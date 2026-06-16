@@ -354,8 +354,8 @@ def consulta(request):
                                         'icono': iconos[2]
                                     })
 
-            except Exception as e:
-                print(f"Error procesando el Excel: {e}")
+        except Exception as e:
+            print(f"Error procesando el Excel: {e}")
 
     if turnos_afl:
         turnos_afl[0]['proximo'] = True
