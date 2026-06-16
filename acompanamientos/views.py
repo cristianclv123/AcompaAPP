@@ -31,24 +31,20 @@ def contiene_mes(texto):
     texto_normalizado = normalizar_texto(texto)
     return any(mes in texto_normalizado for mes in meses)
 
-
 def fila_es_ciclo(fila):
     if not fila:
         return False
     return any('ciclo' in normalizar_texto(celda) for celda in fila if celda)
-
 
 def fila_es_grupo(fila):
     if not fila:
         return False
     return any('grupo' in normalizar_texto(celda) for celda in fila if celda)
 
-
 def fila_es_dia(fila):
     if not fila:
         return False
     return any('dia' in normalizar_texto(celda) for celda in fila if celda)
-
 
 def es_hoja_afl(nombre_hoja, filas_muestra, texto_cabecera, sheet_idx=None, rango_afl=None):
     if rango_afl is not None and sheet_idx is not None and sheet_idx in rango_afl:
@@ -74,7 +70,6 @@ def es_hoja_afl(nombre_hoja, filas_muestra, texto_cabecera, sheet_idx=None, rang
             anterior = filas_muestra[idx - 1]
             if fila_es_ciclo(anterior) or fila_es_dia(anterior) or any(contiene_mes(celda) for celda in anterior if celda):
                 return True
-
     return False
 
 def calcular_rango_afl(sheetnames):
@@ -100,15 +95,12 @@ def calcular_rango_afl(sheetnames):
         return range(inicio + 1, fin)
     return None
 
-
 def consulta(request):
     query_raw = request.GET.get('q', '').strip()
     query = normalizar_texto(query_raw)
     turnos_zonas = []
     turnos_afl = []
-    turnos_filtrados = []
-
-    # preparar ruta del excel y cargar cancha_data siempre que exista el archivo
+    
     ruta_excel = os.path.join(settings.BASE_DIR, 'Acompañamientos 5º-11º.xlsx')
     cancha_data = []
 
@@ -120,55 +112,87 @@ def consulta(request):
             wb = openpyxl.load_workbook(ruta_excel, data_only=True)
             rango_afl = calcular_rango_afl(wb.sheetnames)
 
-            # Recolectar datos completos de pestañas de Cancha (para mostrar en nuevo tab "Cancha")
-            # Procesamos para eliminar columnas vacías y filas totalmente vacías
+            # ==============================================================
+            # SECCIÓN QUE EXTRAE ÚNICAMENTE LAS DOS TABLAS SOLICITADAS
+            # ==============================================================
+            target_sheets = []
+            
             for nm in wb.sheetnames:
-                nm_lower = nm.lower()
-                hoja_tmp = wb[nm]
+                # AQUÍ ESTÁ EL CAMBIO: Solo permite exactamente la hoja que se llame "Cancha"
+                if nm.strip().lower() == 'cancha':
+                    if nm not in target_sheets:
+                        target_sheets.append(nm)
+
+            for ts in target_sheets:
+                hoja_tmp = wb[ts]
                 filas_tmp = list(hoja_tmp.iter_rows(values_only=True))
-                texto_cab_tmp = " ".join([str(c).upper() for f in filas_tmp[:6] for c in f if c])
-                if 'cancha' in nm_lower or 'distribucion' in texto_cab_tmp.lower() or 'distribución' in texto_cab_tmp.lower():
-                    # calcular columnas que contienen al menos un valor útil
-                    max_cols = 0
-                    for r in filas_tmp:
-                        if r:
-                            max_cols = max(max_cols, len(r))
 
-                    show_cols = []
-                    for col_idx in range(max_cols):
-                        has_value = False
-                        for r in filas_tmp:
-                            if r and col_idx < len(r):
-                                v = r[col_idx]
-                                if v is not None and str(v).strip() != '' and str(v).strip().lower() != 'none':
-                                    has_value = True
-                                    break
-                        if has_value:
-                            show_cols.append(col_idx)
+                filas_limpias = []
+                for r in filas_tmp:
+                    row_clean = []
+                    for c in r:
+                        val = "" if c is None else str(c).strip()
+                        val_lower = val.lower()
+                        if val_lower == 'none':
+                            row_clean.append("")
+                        else:
+                            row_clean.append(val)
+                    filas_limpias.append(row_clean)
 
-                    # Construir filas filtradas manteniendo sólo las columnas visibles
-                    filas_filtradas = []
-                    for r in filas_tmp:
-                        row_cells = []
-                        for c in show_cols:
-                            if r and c < len(r):
-                                row_cells.append(r[c])
+                filas_con_datos = [r for r in filas_limpias if any(c != "" for c in r)]
+
+                if filas_con_datos:
+                    max_cols_tmp = max(len(r) for r in filas_con_datos)
+                    cols_validas = []
+                    for col_idx in range(max_cols_tmp):
+                        if any(col_idx < len(r) and r[col_idx] != "" for r in filas_con_datos):
+                            cols_validas.append(col_idx)
+
+                    grupos_columnas = []
+                    grupo_actual = []
+                    for col in cols_validas:
+                        if not grupo_actual:
+                            grupo_actual.append(col)
+                        else:
+                            if col == grupo_actual[-1] + 1:
+                                grupo_actual.append(col)
                             else:
-                                row_cells.append(None)
+                                grupos_columnas.append(grupo_actual)
+                                grupo_actual = [col]
+                    if grupo_actual:
+                        grupos_columnas.append(grupo_actual)
 
-                        # mantener sólo filas que tengan al menos un valor útil
-                        if any(cell is not None and str(cell).strip() != '' and str(cell).strip().lower() != 'none' for cell in row_cells):
-                            filas_filtradas.append(row_cells)
+                    for idx, grupo in enumerate(grupos_columnas):
+                        filas_trim = []
+                        for r in filas_con_datos:
+                            r_padded = r + [""] * (max_cols_tmp - len(r))
+                            row_final = [r_padded[i] for i in grupo]
+                            if any(c != "" for c in row_final):
+                                filas_trim.append(row_final)
+                        
+                        if filas_trim:
+                            # AQUÍ ASIGNAMOS LOS TÍTULOS EXACTOS QUE PEDISTE A CADA TABLA
+                            if idx == 0:
+                                nombre_seccion = "DISTRIBUCIÓN DE LA CANCHA GRANDE DE 5º -8º SEGUNDO PERIODO"
+                            elif idx == 1:
+                                nombre_seccion = "DISTRIBUCIÓN DE CANCHA PARA LOS DÍAS MARTES"
+                            else:
+                                nombre_seccion = f"Tabla extra {idx + 1}"
 
-                    cancha_data.append({'sheet': nm, 'rows': filas_filtradas, 'cols': len(show_cols)})
+                            cancha_data.append({
+                                'sheet': nombre_seccion, 
+                                'rows': filas_trim, 
+                                'cols': len(grupo)
+                            })
 
-            # Si hay query, procesar búsqueda en las hojas para turnos
+            # ==============================================================
+            # BÚSQUEDA DE PROFESORES EN EL EXCEL
+            # ==============================================================
             if query:
                 for sheet_idx, nombre_hoja in enumerate(wb.sheetnames):
                     hoja = wb[nombre_hoja]
                     nombre_hoja_lower = nombre_hoja.lower()
 
-                    # Omitir pestañas que no contienen programaciones de acompañamiento
                     if 'kawak' in nombre_hoja_lower or 'control' in nombre_hoja_lower:
                         continue
 
@@ -178,9 +202,7 @@ def consulta(request):
 
                     texto_cabecera = " ".join([str(c).upper() for f in filas_muestra for c in f if c])
 
-                    # ==============================================================
-                    # 1. PESTAÑAS DE ZONAS (Ej: 5º - 8º, 9º - 11º)
-                    # ==============================================================
+                    # 1. PESTAÑAS DE ZONAS (Ej: 5º - 8º)
                     if '5º - 8º' in nombre_hoja or '9º - 11º' in nombre_hoja or 'ACOMPAÑAMIENTOS' in texto_cabecera:
                         bloque_actual = "Horario por definir"
 
@@ -228,9 +250,7 @@ def consulta(request):
                                         'icono': iconos[0]
                                     })
 
-                    # ==============================================================
-                    # 2. PESTAÑAS AFL (EXTRACCIÓN 100% DINÁMICA)
-                    # ==============================================================
+                    # 2. PESTAÑAS AFL
                     elif es_hoja_afl(nombre_hoja, filas_muestra, texto_cabecera, sheet_idx, rango_afl):
 
                         todas_las_filas = list(hoja.iter_rows(values_only=True))
@@ -334,9 +354,7 @@ def consulta(request):
                                             'icono': iconos[1]
                                         })
 
-                    # ==============================================================
-                    # 3. PESTAÑAS DE CANCHAS
-                    # ==============================================================
+                    # 3. PESTAÑAS DE CANCHAS (Para los resultados de búsqueda)
                     elif 'cancha' in nombre_hoja_lower or 'distribución' in texto_cabecera:
                         for fila in hoja.iter_rows(min_row=1, values_only=True):
                             for i in range(len(fila)):
@@ -366,7 +384,5 @@ def consulta(request):
         'turnos': turnos_zonas + turnos_afl,
         'cancha_data': cancha_data if 'cancha_data' in locals() else [],
     }
-
-    
 
     return render(request, 'acompaapp/consulta.html', context)
