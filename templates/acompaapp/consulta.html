@@ -57,7 +57,15 @@
                 class="tab-button active"
                 data-tab="zonas"
                 onclick="showTab('zonas')">
-                Zonas / Cancha
+                Zonas
+            </button>
+
+            <button
+                type="button"
+                class="tab-button"
+                data-tab="cancha"
+                onclick="showTab('cancha')">
+                Cancha
             </button>
 
             <button
@@ -145,6 +153,40 @@
     <i class="fa-solid fa-location-dot location"></i>
 
 </div>
+
+        <!-- CANCHA -->
+        <div id="tab-cancha" class="tab-panel hidden">
+
+            {% if cancha_data %}
+                {% for sheet in cancha_data %}
+                    <div class="card">
+                        <div class="card-content">
+                            <h3 style="margin:0 0 8px 0;">{{ sheet.sheet }}</h3>
+                            <div class="cancha-table">
+                                <table>
+                                    <tbody>
+                                    {% for row in sheet.rows %}
+                                        <tr>
+                                            {% for cell in row %}
+                                                <td>{{ cell }}</td>
+                                            {% endfor %}
+                                        </tr>
+                                    {% endfor %}
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                {% endfor %}
+            {% else %}
+                <div class="card">
+                    <div class="card-content" style="text-align:center; width:100%;">
+                        <p>No se encontraron distribuciones de cancha.</p>
+                    </div>
+                </div>
+            {% endif %}
+
+        </div>
 {% endfor %}
 
             {% else %}

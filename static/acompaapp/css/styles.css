@@ -424,3 +424,36 @@ h1 {
     font-size: 24px;
     opacity: .12;
 }
+
+/* =========================
+   CANCHA TABLE
+   - table is horizontally scrollable
+   - small padding, subtle borders
+   - compact font for dense data
+========================= */
+.cancha-table {
+    overflow-x: auto;
+    margin-top: 8px;
+}
+.cancha-table table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 13px;
+}
+.cancha-table td {
+    border: 1px solid #eef2f7;
+    padding: 6px 8px;
+    white-space: nowrap;
+    vertical-align: top;
+}
+.cancha-table tr:nth-child(1) td {
+    font-weight: 700;
+    background: #fbfbfd;
+}
+
+@media (max-width: 600px) {
+    .cancha-table td {
+        padding: 6px;
+        font-size: 12px;
+    }
+}
