@@ -110,28 +110,42 @@
             {% if turnos_afl %}
 
                 {% for turno in turnos_afl %}
-                <div class="card {{ turno.color_tarjeta }} {% if turno.proximo %}next-afl{% endif %}">
+<div class="card {{ turno.color_tarjeta }} {% if turno.proximo %}next-afl{% endif %}">
 
-                    {% if turno.proximo %}
-                    <div class="badge-proximo">
-                        ⭐ Próximo acompañamiento
-                    </div>
-                    {% endif %}
+    {% if turno.proximo %}
+    <div class="badge-proximo">
+    <i class="fa-solid fa-star"></i>
+        Próximo AFL
+    </div>
+    {% endif %}
 
-                    <div class="card-icon">
-                        <i class="fa-solid {{ turno.icono }}"></i>
-                    </div>
+    <div class="card-icon">
+        <i class="fa-solid {{ turno.icono }}"></i>
+    </div>
 
-                    <div class="card-content">
-                        <p><strong>Zona:</strong> {{ turno.zona }}</p>
-                        <p><strong>Día:</strong> {{ turno.dia }}</p>
-                        <p><strong>Bloque:</strong> {{ turno.bloque }}</p>
-                    </div>
+    <div class="card-content">
 
-                    <i class="fa-solid fa-location-dot location"></i>
+        <div class="card-row">
+            <span class="card-label">Zona</span>
+            <span class="card-value">{{ turno.zona }}</span>
+        </div>
 
-                </div>
-                {% endfor %}
+        <div class="card-row">
+            <span class="card-label">Día</span>
+            <span class="card-value">{{ turno.dia }}</span>
+        </div>
+
+        <div class="card-row">
+            <span class="card-label">Bloque</span>
+            <span class="card-value">{{ turno.bloque }}</span>
+        </div>
+
+    </div>
+
+    <i class="fa-solid fa-location-dot location"></i>
+
+</div>
+{% endfor %}
 
             {% else %}
 
