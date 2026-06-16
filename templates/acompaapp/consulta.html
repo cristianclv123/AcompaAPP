@@ -28,10 +28,11 @@
     <form class="search-box" method="get">
         <div class="input-wrapper">
             <i class="fa-solid fa-magnifying-glass"></i>
-            <input type="text"
-                   name="q"
-                   placeholder="Ej: Angélica"
-                   value="{{ request.GET.q }}">
+            <input
+                type="text"
+                name="q"
+                placeholder="Ej: Angélica"
+                value="{{ request.GET.q }}">
         </div>
         <button type="submit">Buscar</button>
     </form>
@@ -51,28 +52,31 @@
 
         <!-- PESTAÑAS -->
         <div class="tabs">
-            <button type="button"
-                    class="tab-button active"
-                    data-tab="zonas"
-                    onclick="showTab('zonas')">
+            <button
+                type="button"
+                class="tab-button active"
+                data-tab="zonas"
+                onclick="showTab('zonas')">
                 Zonas / Cancha
             </button>
 
-            <button type="button"
-                    class="tab-button"
-                    data-tab="afl"
-                    onclick="showTab('afl')">
+            <button
+                type="button"
+                class="tab-button"
+                data-tab="afl"
+                onclick="showTab('afl')">
                 AFL
             </button>
         </div>
 
-        <!-- ZONAS / CANCHA (VISIBLE POR DEFECTO) -->
+        <!-- ZONAS / CANCHA -->
         <div id="tab-zonas" class="tab-panel">
 
             {% if turnos_zonas %}
 
                 {% for turno in turnos_zonas %}
                 <div class="card {{ turno.color_tarjeta }}">
+
                     <div class="card-icon">
                         <i class="fa-solid {{ turno.icono }}"></i>
                     </div>
@@ -84,6 +88,7 @@
                     </div>
 
                     <i class="fa-solid fa-location-dot location"></i>
+
                 </div>
                 {% endfor %}
 
@@ -99,13 +104,20 @@
 
         </div>
 
-        <!-- AFL (OCULTO POR DEFECTO) -->
+        <!-- AFL -->
         <div id="tab-afl" class="tab-panel hidden">
 
             {% if turnos_afl %}
 
                 {% for turno in turnos_afl %}
-                <div class="card {{ turno.color_tarjeta }}">
+                <div class="card {{ turno.color_tarjeta }} {% if turno.proximo %}next-afl{% endif %}">
+
+                    {% if turno.proximo %}
+                    <div class="badge-proximo">
+                        ⭐ Próximo acompañamiento
+                    </div>
+                    {% endif %}
+
                     <div class="card-icon">
                         <i class="fa-solid {{ turno.icono }}"></i>
                     </div>
@@ -117,6 +129,7 @@
                     </div>
 
                     <i class="fa-solid fa-location-dot location"></i>
+
                 </div>
                 {% endfor %}
 
@@ -155,6 +168,7 @@
 </main>
 
 <script>
+
 function showTab(tabName) {
 
     const buttons = document.querySelectorAll('.tab-button');
@@ -163,15 +177,15 @@ function showTab(tabName) {
     buttons.forEach(btn => btn.classList.remove('active'));
     panels.forEach(panel => panel.classList.add('hidden'));
 
-    const activeButton = document.querySelector(
-        `.tab-button[data-tab="${tabName}"]`
-    );
+    const activeButton =
+        document.querySelector(`.tab-button[data-tab="${tabName}"]`);
 
     if (activeButton) {
         activeButton.classList.add('active');
     }
 
-    const target = document.getElementById('tab-' + tabName);
+    const target =
+        document.getElementById('tab-' + tabName);
 
     if (target) {
         target.classList.remove('hidden');
@@ -181,6 +195,7 @@ function showTab(tabName) {
 document.addEventListener('DOMContentLoaded', function () {
     showTab('zonas');
 });
+
 </script>
 
 </body>

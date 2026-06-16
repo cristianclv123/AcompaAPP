@@ -313,10 +313,15 @@ def consulta(request):
             except Exception as e:
                 print(f"Error procesando el Excel: {e}")
 
+    if turnos_afl:
+        turnos_afl[0]['proximo'] = True
+
     context = {
         'turnos_zonas': turnos_zonas,
         'turnos_afl': turnos_afl,
         'turnos': turnos_zonas + turnos_afl,
     }
+
+    
 
     return render(request, 'acompaapp/consulta.html', context)
