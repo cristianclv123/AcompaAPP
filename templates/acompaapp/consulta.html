@@ -37,18 +37,20 @@
         <button type="submit">Buscar</button>
     </form>
 
-    {% if request.GET.q %}
+    {% if request.GET.q or cancha_data %}
     <section class="results">
 
         <h2>Tus Acompañamientos</h2>
 
+        {% if request.GET.q %}
         <div class="user-title">
             <i class="fa-solid fa-circle-check"></i>
             <strong>{{ request.GET.q|title }}:</strong>
             Tus turnos asignados:
         </div>
+        {% endif %}
 
-        {% if turnos_zonas or turnos_afl %}
+        {% if turnos_zonas or turnos_afl or cancha_data %}
 
         <!-- PESTAÑAS -->
         <div class="tabs">
@@ -118,41 +120,54 @@
             {% if turnos_afl %}
 
                 {% for turno in turnos_afl %}
-<div class="card {{ turno.color_tarjeta }} {% if turno.proximo %}next-afl{% endif %}">
+                <div class="card {{ turno.color_tarjeta }} {% if turno.proximo %}next-afl{% endif %}">
 
-    {% if turno.proximo %}
-    <div class="badge-proximo">
-    <i class="fa-solid fa-star"></i>
-        Próximo AFL
-    </div>
-    {% endif %}
+                    {% if turno.proximo %}
+                    <div class="badge-proximo">
+                    <i class="fa-solid fa-star"></i>
+                        Próximo AFL
+                    </div>
+                    {% endif %}
 
-    <div class="card-icon">
-        <i class="fa-solid {{ turno.icono }}"></i>
-    </div>
+                    <div class="card-icon">
+                        <i class="fa-solid {{ turno.icono }}"></i>
+                    </div>
 
-    <div class="card-content">
+                    <div class="card-content">
 
-        <div class="card-row">
-            <span class="card-label">Zona</span>
-            <span class="card-value">{{ turno.zona }}</span>
+                        <div class="card-row">
+                            <span class="card-label">Zona</span>
+                            <span class="card-value">{{ turno.zona }}</span>
+                        </div>
+
+                        <div class="card-row">
+                            <span class="card-label">Día</span>
+                            <span class="card-value">{{ turno.dia }}</span>
+                        </div>
+
+                        <div class="card-row">
+                            <span class="card-label">Bloque</span>
+                            <span class="card-value">{{ turno.bloque }}</span>
+                        </div>
+
+                    </div>
+
+                    <i class="fa-solid fa-location-dot location"></i>
+
+                </div>
+                {% endfor %}
+
+            {% else %}
+
+                <div class="card">
+                    <div class="card-content" style="text-align:center; width:100%;">
+                        <p>No se encontraron acompañamientos AFL.</p>
+                    </div>
+                </div>
+
+            {% endif %}
+
         </div>
-
-        <div class="card-row">
-            <span class="card-label">Día</span>
-            <span class="card-value">{{ turno.dia }}</span>
-        </div>
-
-        <div class="card-row">
-            <span class="card-label">Bloque</span>
-            <span class="card-value">{{ turno.bloque }}</span>
-        </div>
-
-    </div>
-
-    <i class="fa-solid fa-location-dot location"></i>
-
-</div>
 
         <!-- CANCHA -->
         <div id="tab-cancha" class="tab-panel hidden">
@@ -184,19 +199,6 @@
                         <p>No se encontraron distribuciones de cancha.</p>
                     </div>
                 </div>
-            {% endif %}
-
-        </div>
-{% endfor %}
-
-            {% else %}
-
-                <div class="card">
-                    <div class="card-content" style="text-align:center; width:100%;">
-                        <p>No se encontraron acompañamientos AFL.</p>
-                    </div>
-                </div>
-
             {% endif %}
 
         </div>

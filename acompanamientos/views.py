@@ -104,65 +104,66 @@ def calcular_rango_afl(sheetnames):
 def consulta(request):
     query_raw = request.GET.get('q', '').strip()
     query = normalizar_texto(query_raw)
-
     turnos_zonas = []
     turnos_afl = []
     turnos_filtrados = []
 
-    if query:
-        ruta_excel = os.path.join(settings.BASE_DIR, 'Acompañamientos 5º-11º.xlsx')
+    # preparar ruta del excel y cargar cancha_data siempre que exista el archivo
+    ruta_excel = os.path.join(settings.BASE_DIR, 'Acompañamientos 5º-11º.xlsx')
+    cancha_data = []
 
-        colores = ['blue', 'green', 'orange']
-        iconos = ['fa-volleyball', 'fa-mug-hot', 'fa-road', 'fa-location-dot']
+    colores = ['blue', 'green', 'orange']
+    iconos = ['fa-volleyball', 'fa-mug-hot', 'fa-road', 'fa-location-dot']
 
-        if os.path.exists(ruta_excel):
-            try:
-                wb = openpyxl.load_workbook(ruta_excel, data_only=True)
-                rango_afl = calcular_rango_afl(wb.sheetnames)
+    if os.path.exists(ruta_excel):
+        try:
+            wb = openpyxl.load_workbook(ruta_excel, data_only=True)
+            rango_afl = calcular_rango_afl(wb.sheetnames)
 
-                # Recolectar datos completos de pestañas de Cancha (para mostrar en nuevo tab "Cancha")
-                # Procesamos para eliminar columnas vacías y filas totalmente vacías
-                cancha_data = []
-                for nm in wb.sheetnames:
-                    nm_lower = nm.lower()
-                    hoja_tmp = wb[nm]
-                    filas_tmp = list(hoja_tmp.iter_rows(values_only=True))
-                    texto_cab_tmp = " ".join([str(c).upper() for f in filas_tmp[:6] for c in f if c])
-                    if 'cancha' in nm_lower or 'distribucion' in texto_cab_tmp.lower() or 'distribución' in texto_cab_tmp.lower():
-                        # calcular columnas que contienen al menos un valor útil
-                        max_cols = 0
+            # Recolectar datos completos de pestañas de Cancha (para mostrar en nuevo tab "Cancha")
+            # Procesamos para eliminar columnas vacías y filas totalmente vacías
+            for nm in wb.sheetnames:
+                nm_lower = nm.lower()
+                hoja_tmp = wb[nm]
+                filas_tmp = list(hoja_tmp.iter_rows(values_only=True))
+                texto_cab_tmp = " ".join([str(c).upper() for f in filas_tmp[:6] for c in f if c])
+                if 'cancha' in nm_lower or 'distribucion' in texto_cab_tmp.lower() or 'distribución' in texto_cab_tmp.lower():
+                    # calcular columnas que contienen al menos un valor útil
+                    max_cols = 0
+                    for r in filas_tmp:
+                        if r:
+                            max_cols = max(max_cols, len(r))
+
+                    show_cols = []
+                    for col_idx in range(max_cols):
+                        has_value = False
                         for r in filas_tmp:
-                            if r:
-                                max_cols = max(max_cols, len(r))
+                            if r and col_idx < len(r):
+                                v = r[col_idx]
+                                if v is not None and str(v).strip() != '' and str(v).strip().lower() != 'none':
+                                    has_value = True
+                                    break
+                        if has_value:
+                            show_cols.append(col_idx)
 
-                        show_cols = []
-                        for col_idx in range(max_cols):
-                            has_value = False
-                            for r in filas_tmp:
-                                if r and col_idx < len(r):
-                                    v = r[col_idx]
-                                    if v is not None and str(v).strip() != '' and str(v).strip().lower() != 'none':
-                                        has_value = True
-                                        break
-                            if has_value:
-                                show_cols.append(col_idx)
+                    # Construir filas filtradas manteniendo sólo las columnas visibles
+                    filas_filtradas = []
+                    for r in filas_tmp:
+                        row_cells = []
+                        for c in show_cols:
+                            if r and c < len(r):
+                                row_cells.append(r[c])
+                            else:
+                                row_cells.append(None)
 
-                        # Construir filas filtradas manteniendo sólo las columnas visibles
-                        filas_filtradas = []
-                        for r in filas_tmp:
-                            row_cells = []
-                            for c in show_cols:
-                                if r and c < len(r):
-                                    row_cells.append(r[c])
-                                else:
-                                    row_cells.append(None)
+                        # mantener sólo filas que tengan al menos un valor útil
+                        if any(cell is not None and str(cell).strip() != '' and str(cell).strip().lower() != 'none' for cell in row_cells):
+                            filas_filtradas.append(row_cells)
 
-                            # mantener sólo filas que tengan al menos un valor útil
-                            if any(cell is not None and str(cell).strip() != '' and str(cell).strip().lower() != 'none' for cell in row_cells):
-                                filas_filtradas.append(row_cells)
+                    cancha_data.append({'sheet': nm, 'rows': filas_filtradas, 'cols': len(show_cols)})
 
-                        cancha_data.append({'sheet': nm, 'rows': filas_filtradas, 'cols': len(show_cols)})
-
+            # Si hay query, procesar búsqueda en las hojas para turnos
+            if query:
                 for sheet_idx, nombre_hoja in enumerate(wb.sheetnames):
                     hoja = wb[nombre_hoja]
                     nombre_hoja_lower = nombre_hoja.lower()
