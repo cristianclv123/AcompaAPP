@@ -9,12 +9,15 @@ body {
     color: #1f2937;
 }
 
-/* Header */
+/* =========================
+   HEADER
+========================= */
+
 .app-header {
     display: flex;
-    justify-content: space-between;
+    justify-content: center;
     align-items: center;
-    padding: 14px 18px;
+    padding: 12px 20px;
     background: #ffffff;
     box-shadow: 0 2px 6px rgba(0,0,0,0.05);
 }
@@ -22,17 +25,33 @@ body {
 .logo {
     display: flex;
     align-items: center;
-    gap: 8px;
-    font-weight: 600;
+    gap: 12px;
     color: #2563eb;
+    font-weight: 700;
+}
+
+.logo-img {
+    width: 48px;
+    height: 48px;
+    object-fit: contain;
+    display: block;
+    flex-shrink: 0;
+}
+
+.logo span {
+    font-size: 1.1rem;
+    line-height: 1.2;
+    white-space: nowrap;
 }
 
 .menu-icon {
-    font-size: 20px;
-    color: #374151;
+    display: none;
 }
 
-/* Main */
+/* =========================
+   MAIN
+========================= */
+
 .container {
     padding: 20px;
     max-width: 800px;
@@ -49,7 +68,10 @@ h1 {
     margin-bottom: 16px;
 }
 
-/* Search */
+/* =========================
+   SEARCH
+========================= */
+
 .search-box {
     display: flex;
     gap: 10px;
@@ -75,6 +97,7 @@ h1 {
     border: none;
     outline: none;
     width: 100%;
+    font-size: 15px;
 }
 
 .search-box button {
@@ -84,9 +107,18 @@ h1 {
     padding: 0 18px;
     border-radius: 8px;
     cursor: pointer;
+    font-weight: 600;
+    transition: 0.2s;
 }
 
-/* Results */
+.search-box button:hover {
+    background: #15803d;
+}
+
+/* =========================
+   RESULTS
+========================= */
+
 .results h2 {
     margin-bottom: 10px;
 }
@@ -99,7 +131,10 @@ h1 {
     margin-bottom: 16px;
 }
 
-/* Cards */
+/* =========================
+   CARDS
+========================= */
+
 .card {
     display: flex;
     align-items: center;
@@ -116,12 +151,17 @@ h1 {
     margin-right: 14px;
 }
 
+.card-content {
+    flex: 1;
+}
+
 .card-content p {
     margin: 4px 0;
     font-size: 14px;
 }
 
-/* Accent colors */
+/* Colores */
+
 .card.blue {
     border-left: 6px solid #3b82f6;
 }
@@ -140,10 +180,18 @@ h1 {
     font-size: 18px;
 }
 
+/* =========================
+   TABS
+========================= */
+
 .tabs {
     display: flex;
     gap: 10px;
     margin-bottom: 18px;
+    flex-wrap: wrap;
+    background: #f8fafc;
+    padding: 10px;
+    border-radius: 14px;
 }
 
 .tab-button {
@@ -172,13 +220,84 @@ h1 {
     background: #eff6ff;
 }
 
-.tabs {
-    flex-wrap: wrap;
-    background: #f8fafc;
-    padding: 10px;
-    border-radius: 14px;
-}
-
 .tab-panel.hidden {
     display: none !important;
+}
+
+/* =========================
+   RESPONSIVE TABLET
+========================= */
+
+@media (max-width: 768px) {
+
+    .logo-img {
+        width: 38px;
+        height: 38px;
+    }
+
+    .logo span {
+        font-size: 0.95rem;
+    }
+
+    .search-box {
+        flex-direction: column;
+    }
+
+    .search-box button {
+        height: 46px;
+    }
+
+    .tab-button {
+        width: 100%;
+        min-width: unset;
+    }
+
+    .card {
+        padding: 12px;
+    }
+}
+
+/* =========================
+   RESPONSIVE MÓVIL
+========================= */
+
+@media (max-width: 480px) {
+
+    .app-header {
+        padding: 10px 15px;
+    }
+
+    .logo {
+        gap: 8px;
+    }
+
+    .logo-img {
+        width: 32px;
+        height: 32px;
+    }
+
+    .logo span {
+        font-size: 0.85rem;
+    }
+
+    h1 {
+        font-size: 20px;
+    }
+
+    .container {
+        padding: 15px;
+    }
+
+    .card {
+        flex-direction: row;
+        align-items: flex-start;
+    }
+
+    .card-icon {
+        font-size: 22px;
+    }
+
+    .card-content p {
+        font-size: 13px;
+    }
 }
